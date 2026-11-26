@@ -12,6 +12,11 @@ const holder: Holder = (g.__financeDb ??= {});
 export function getDb(): Promise<Driver> {
   if (!holder.promise) {
     holder.promise = (async () => {
+      if (!process.env.DATABASE_URL && process.env.VERCEL) {
+        throw new Error(
+          "DATABASE_URL is not set. The embedded database can't persist on Vercel; add a PostgreSQL connection string (e.g. Neon or Supabase) in Project Settings → Environment Variables and redeploy.",
+        );
+      }
       const db = await createDriver({
         url: process.env.DATABASE_URL || undefined,
         dataDir: process.env.PGLITE_DATA_DIR || "./.data/pglite",

@@ -43,7 +43,9 @@ async function createPgDriver(url: string): Promise<Driver> {
   types.setTypeParser(OID.timestamptz, normalizeTimestamp);
   types.setTypeParser(OID.timestamp, normalizeTimestamp);
   const ssl = /sslmode=require|supabase\.(co|com)/.test(url) ? { rejectUnauthorized: false } : undefined;
-  const pool = new pg.default.Pool({ connectionString: url, max: 10, ssl });
+  // Serverless platforms run many small instances: keep each pool small.
+  const max = Number(process.env.PG_POOL_MAX) || (process.env.VERCEL ? 3 : 10);
+  const pool = new pg.default.Pool({ connectionString: url, max, ssl, idleTimeoutMillis: 10_000 });
   return {
     kind: "pg",
     async query(sql, params) {

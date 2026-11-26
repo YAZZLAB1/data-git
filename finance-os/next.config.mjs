@@ -7,6 +7,8 @@ const root = path.dirname(fileURLToPath(import.meta.url));
 const nextConfig = {
   serverExternalPackages: ["@electric-sql/pglite", "pg"],
   outputFileTracingRoot: root,
+  // SQL migrations are read at runtime; make sure serverless deployments bundle them.
+  outputFileTracingIncludes: { "/**": ["./db/migrations/**"] },
   poweredByHeader: false,
   experimental: { serverActions: { bodySizeLimit: "26mb" } },
   async headers() {
