@@ -29,7 +29,8 @@ cp .env.example .env.local
 # DATABASE_URL=postgresql://user:password@host:5432/dbname
 ```
 
-Any PostgreSQL 15+ server works, including a Supabase project's database. The connecting role needs to own
+Any PostgreSQL 15+ server works, including a Supabase project's database. On Vercel, connecting Neon from the
+project's Storage tab is enough: the app also reads the `STORAGE_DATABASE_URL` / `POSTGRES_URL` variables it creates. The connecting role needs to own
 the schema (e.g. Supabase's `postgres` role); migrations create a least-privileged `finance_app` role used
 for every user request.
 

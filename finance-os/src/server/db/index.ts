@@ -1,5 +1,5 @@
 import "server-only";
-import { createDriver, type Driver, type Queryable, type Tx } from "./driver";
+import { createDriver, databaseUrl, type Driver, type Queryable, type Tx } from "./driver";
 import { runMigrations } from "./migrate";
 
 export type { Queryable, Tx };
@@ -12,13 +12,13 @@ const holder: Holder = (g.__financeDb ??= {});
 export function getDb(): Promise<Driver> {
   if (!holder.promise) {
     holder.promise = (async () => {
-      if (!process.env.DATABASE_URL && process.env.VERCEL) {
+      if (!databaseUrl() && process.env.VERCEL) {
         throw new Error(
           "DATABASE_URL is not set. The embedded database can't persist on Vercel; add a PostgreSQL connection string (e.g. Neon or Supabase) in Project Settings → Environment Variables and redeploy.",
         );
       }
       const db = await createDriver({
-        url: process.env.DATABASE_URL || undefined,
+        url: databaseUrl(),
         dataDir: process.env.PGLITE_DATA_DIR || "./.data/pglite",
       });
       await runMigrations(db);

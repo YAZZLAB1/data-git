@@ -119,6 +119,14 @@ async function createPgliteDriver(dataDir: string | undefined): Promise<Driver> 
   };
 }
 
+/**
+ * The PostgreSQL connection string, if configured. Besides DATABASE_URL, accepts the
+ * names Vercel's storage integrations create by default (STORAGE_ prefix, POSTGRES_URL).
+ */
+export function databaseUrl(env: Record<string, string | undefined> = process.env): string | undefined {
+  return env.DATABASE_URL || env.STORAGE_DATABASE_URL || env.POSTGRES_URL || undefined;
+}
+
 export async function createDriver(opts: { url?: string; dataDir?: string; memory?: boolean }): Promise<Driver> {
   if (opts.url) return createPgDriver(opts.url);
   return createPgliteDriver(opts.memory ? undefined : opts.dataDir ?? "./.data/pglite");
